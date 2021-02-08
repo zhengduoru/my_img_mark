@@ -1,0 +1,170 @@
+<!DOCTYPE HTML>
+<HTML>
+
+<HEAD>
+    <TITLE> 图片标注工具 </TITLE>
+    <META NAME="Generator" CONTENT="EditPlus">
+    <META NAME="Author" CONTENT="">
+    <META NAME="Keywords" CONTENT="">
+    <META NAME="Description" CONTENT="">
+    <style type="text/css">
+    img {
+        #width: 300px;
+        #height: 300px;
+        max-width: 300px;
+        max-height: 300px;
+    }
+
+    td {
+        width: 320px;
+        height: 320px;
+        text-align: center;
+    }
+
+    .button {
+        background-color: #06F1BC;
+        border: none;
+        color: black;
+        padding: 5px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+    }
+    </style>
+</HEAD>
+
+<BODY onclick=bodyclickHandler(event)>
+    <div id="divURL" style="display:block">
+        <label>每行展示图片数量：</label>
+        <input type=text size=3 class="button" value=6 id="imgsPerRow" />
+        <label>请输入图片URLs：</label>
+        <input type=button class="button" value="显示图片" onclick="loadImg()" />
+        <br />
+        <textarea cols="40" rows="15" style="width:1600px;height:800px;" name="idTxtAreaUrl" id="idTxtAreaUrl"></textarea>
+    </div>
+    <div id="divImg" style="display:none">
+        <table id="table1" border=1px cellpadding="2" cellspacing="1">
+            <tbody id="idTable">
+            </tbody>
+        </table>
+        <div>
+            <div>
+                <!-- <input type=button value="获取被标记图片的URL" onclick="getMarkedImgUrl()" /> -->
+                <input type=button class="button" value="返回" onclick="clearTable()" />
+            </div>
+            <div>
+                <label>被标记图片的URL列表：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label><span class=""></span><label id="labelMarkedImgCnt"></label>
+            </div>
+            <textarea cols="40" rows="5" style="width:1600px;height:200px;" disabled="disabled" name="idTxtAreaMarkedUrl" id="idTxtAreaMarkedUrl"></textarea>
+        </div>
+    </div>
+</BODY>
+<script language="javascript">
+function CreateCellWithText(text, idname, hidden = false) {
+    var cell = document.createElement("td");
+    cell.hidden = hidden;
+    cell.id = idname;
+    cell.appendChild(document.createTextNode(text));
+    return cell;
+}
+
+function CreateCellWithImage(imagePath, idname, imgid) {
+    var cell = document.createElement("td");
+    var image = document.createElement("img");
+    image.id = imgid;
+    image.src = imagePath;
+    cell.id = idname;
+    cell.appendChild(image);
+    return cell;
+}
+
+function bodyclickHandler(evt) {
+    var obj = evt.srcElement || evt.target; //取事件源
+    var idprefix = obj.id.substring(0, 5);
+    var idnum = obj.id.substr(5);
+    var valObj = document.getElementById("valTD" + idnum);
+    if ("valTD" == idprefix || "myimg" == idprefix) {
+        if (valObj.innerHTML == 1) {
+            valObj.innerHTML = 0;
+            var valObj = document.getElementById("imgTD" + idnum);
+            valObj.style.color = "#000000";
+            valObj.style.backgroundColor = "#ffffff";
+        } else {
+            valObj.innerHTML = 1;
+            var valObj = document.getElementById("imgTD" + idnum);
+            valObj.style.color = "#000000";
+            valObj.style.backgroundColor = "#06F1BC";
+        }
+    };
+    getMarkedImgUrl();
+}
+
+function getMarkedImgUrl() {
+    columns = document.getElementById("imgsPerRow").value;
+    var tabBody = document.getElementById("idTable");
+    var dstTxtArea = document.getElementById("idTxtAreaMarkedUrl");
+    dstTxtArea.innerHTML = "";
+    var cnt = 0;
+    var i = 0;
+    while (document.getElementById("valTD" + i) != null) {
+        if (1 == document.getElementById("valTD" + i).innerHTML) {
+            //将该行的URL贴到下面的表格中
+            dstTxtArea.innerHTML += document.getElementById("myimg" + i).src;
+            dstTxtArea.innerHTML += "\n";
+            cnt++;
+        }
+        i++;
+    }
+    document.getElementById("labelMarkedImgCnt").innerHTML = "<b>共标记了 " + cnt + " 张图片！</b>";
+    document.getElementById("labelMarkedImgCnt").style.color = "red";
+}
+
+function loadImg() {
+    columns = document.getElementById("imgsPerRow").value;
+    var objDivUrl = document.getElementById("divURL");
+    var objDivImg = document.getElementById("divImg");
+    objDivUrl.style.display = "none";
+    objDivImg.style.display = "block";
+
+    var ObjURLTxt = document.getElementById("idTxtAreaUrl");
+    var content = ObjURLTxt.value.split(/[\s\n]+/);
+    var arrImgUrl = content;
+    var tabBody = document.getElementById("idTable");
+    var cnt = 0;
+    for (var i = 0; i < arrImgUrl.length; i++) {
+        if (arrImgUrl[i].length == 0) {
+            continue;
+        }
+        if (cnt % columns == 0) {
+            var row = document.createElement("tr");
+            var index = CreateCellWithText(i, "indexTD" + i);
+            index.style = 'width: 30px; word-break: break-all';
+            row.appendChild(index);
+        }
+        var idTD = CreateCellWithText(i + 1, "idTD" + i, true);
+        var imgTD = CreateCellWithImage(arrImgUrl[i], "imgTD" + i, "myimg" + i);
+        var txtTD = CreateCellWithText("0", "valTD" + i, true);
+        row.appendChild(idTD);
+        row.appendChild(imgTD);
+        row.appendChild(txtTD);
+        if (cnt % columns == 0) {
+            tabBody.appendChild(row);
+        }
+        cnt++;
+    }
+}
+
+function clearTable() {
+    var objDivUrl = document.getElementById("divURL");
+    var objDivImg = document.getElementById("divImg");
+    objDivUrl.style.display = "block";
+    objDivImg.style.display = "none";
+    var idTable = document.getElementById("idTable");
+    idTable.innerHTML = "";
+}
+</script>
+
+</HTML>
