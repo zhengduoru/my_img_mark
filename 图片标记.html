@@ -86,7 +86,7 @@ function bodyclickHandler(evt) {
     var idprefix = obj.id.substring(0, 5);
     var idnum = obj.id.substr(5);
     var valObj = document.getElementById("valTD" + idnum);
-    if ("valTD" == idprefix || "myimg" == idprefix) {
+    if ("imgTD" == idprefix || "myimg" == idprefix) {
         if (valObj.innerHTML == 1) {
             valObj.innerHTML = 0;
             var valObj = document.getElementById("imgTD" + idnum);
