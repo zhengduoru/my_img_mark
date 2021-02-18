@@ -130,7 +130,7 @@ function loadImg() {
     objDivImg.style.display = "block";
 
     var ObjURLTxt = document.getElementById("idTxtAreaUrl");
-    var content = ObjURLTxt.value.split(/[\s\n]+/);
+    var content = ObjURLTxt.value.split(/[\s\n,]+/);
     var arrImgUrl = content;
     var tabBody = document.getElementById("idTable");
     var cnt = 0;
